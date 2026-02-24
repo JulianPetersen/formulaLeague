@@ -7,9 +7,11 @@ const router = Router();
 
 router.post("/",authMiddleware, roleMiddleware(["admin", "moderator"]),raceCtrl.createRace);
 router.get("/", raceCtrl.getAllRaces);
+router.get("/lista", raceCtrl.getRacesLista);
+router.get("/upcoming", raceCtrl.getRacesUpcoming);
 router.get("/:id", raceCtrl.getRaceById);
 router.delete("/:id", authMiddleware, roleMiddleware(["admin", "moderator"]), raceCtrl.deleteRace)
 router.patch('/:id', authMiddleware,roleMiddleware(["admin", "moderator"]),raceCtrl.updateRace   )
-router.post("/:id/close", authMiddleware, roleMiddleware(["admin", "moderator"]), raceCtrl.closeRace);
+router.put("/:id/close", authMiddleware, roleMiddleware(["admin", "moderator"]), raceCtrl.closeRace);
 
-export default router;
+export default router; 

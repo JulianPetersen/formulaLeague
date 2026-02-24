@@ -3,7 +3,11 @@ import mongoose from "mongoose";
 
 const raceSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  circuit: { type: String },
+  circuit: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Track",
+    required: true
+  },
   date: { type: Date, required: true },
   pilots: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Pilot' }], // orden no implica resultado
   cutoff: { type: Date }, // hasta cuándo se puede pronosticar
@@ -22,8 +26,8 @@ const raceSchema = new mongoose.Schema({
   ],
   status: {
     type: String,
-    enum: ["upcoming", "closed", "processed"],
-    default: "upcoming"
+    enum: ["lista","proximamente", "cerrada", "procesada"],
+    default: "proximamente"
   }
 
 
@@ -31,4 +35,4 @@ const raceSchema = new mongoose.Schema({
   { timestamps: true, versionKey: false });
 
 
-module.exports = mongoose.model('Race', raceSchema);
+module.exports = mongoose.model('Race', raceSchema); 

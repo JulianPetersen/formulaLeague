@@ -1,17 +1,6 @@
 import Prediction from "../models/prediction.model";
 import Race from '../models/race.model'
 
-// export const createPrediction = async (req, res) => {
-//     try {
-//         const { user,race,positions,pointsAwarded } = req.body
-//         const newPrediction = new Prediction({ user,race,positions,pointsAwarded })
-
-//         const newPredictionSaved = await newPrediction.save();
-//         res.status(200).json(newPredictionSaved)
-//     } catch (error) {
-//         res.status(400).json({messagge:error})
-//     }
-// }
 
 export const createPrediction = async (req, res) => {
   try {
@@ -31,7 +20,7 @@ export const createPrediction = async (req, res) => {
       return res.status(400).json({ message: "Prediction time is over" });
     }
 
-    if (race.status !== "upcoming") {
+    if (race.status !== "proximamente") {
       return res.status(400).json({ message: "Race is not open for predictions" });
     }
 
@@ -98,8 +87,29 @@ export const getMyPredictionByRace = async (req, res) => {
 };
 
 
+export const getMyAllPrediction = async (req, res) => {
+  try {
+    console.log(req.user)
 
-export const validatePositions = (positions, maxPositions = 20) => {
+    const userId = req.user.id;
+
+    const prediction = await Prediction.find({
+      user: userId,
+    }).populate("positions.pilot", "name number team");
+
+    if (!prediction) {
+      return res.status(404).json({ message: "Prediction not found" });
+    }
+
+    return res.status(200).json(prediction);
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({ message: error.message });
+  }
+};
+
+
+export const validatePositions = (positions, maxPositions = 22) => {
   if (!Array.isArray(positions)) {
     return "Positions must be an array";
   }
@@ -140,3 +150,4 @@ export const validatePositions = (positions, maxPositions = 20) => {
 
   return null; // ✅ Todo OK
 };
+ 

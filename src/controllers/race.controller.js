@@ -20,6 +20,8 @@ export const createRace = async (req, res) => {
 export const getAllRaces = async (req, res) => {
     try {
         const allRaces = await Race.find()
+        .populate('circuit')
+        .populate('pilots');
         res.status(200).json(allRaces)
     } catch (error) {
         res.status(400).json(error)
@@ -29,6 +31,7 @@ export const getAllRaces = async (req, res) => {
 export const getRaceById = async (req, res) => {
     try {
         const race = await Race.findById(req.params.id)
+        .populate('pilots');
         res.status(200).json(race)
     } catch (error) {
         res.status(400).json({ messagge: error })
@@ -65,6 +68,34 @@ export const updateRace = async (req, res) => {
 };
 
 
+export const getRacesLista = async (req, res) => {
+    try {
+        const races = await Race.find({ status: 'lista' })
+            .populate('circuit')
+            .populate('pilots');
+
+        return res.status(200).json(races);
+    } catch (error) {
+        console.error(error);
+        return res.status(400).json({ message: error.message });
+    }
+};
+
+
+export const getRacesUpcoming = async (req, res) => {
+    try {
+        const races = await Race.find({ status: 'proximamente' })
+            .populate('circuit')
+            .populate('pilots');
+
+        return res.status(200).json(races);
+    } catch (error) {
+        console.error(error);
+        return res.status(400).json({ message: error.message });
+    }
+};
+
+
 export const deleteRace = async (req, res) => {
     try {
         const deletedRace = await Race.findByIdAndDelete(req.params.id)
@@ -85,13 +116,13 @@ export const closeRace = async (req, res) => {
             return res.status(404).json({ message: "Race not found" });
         }
 
-        if (race.status !== "upcoming") {
+        if (race.status !== "lista") {
             return res.status(400).json({ message: "Race already closed" });
         }
 
         // Guardar resultado oficial
         race.result = result;
-        race.status = "closed";
+        race.status = "cerrada";
         await race.save();
 
         // Traer todos los pronósticos de esa carrera
@@ -112,9 +143,9 @@ export const closeRace = async (req, res) => {
                 prediction.user,
                 { $inc: { points } }
             );
-        }
+        } 
 
-        race.status = "processed";
+        race.status = "procesada";
         await race.save();
 
         return res.status(200).json({

@@ -21,6 +21,7 @@ export const createPilot = async (req, res) => {
 export const getAllPilots = async (req,res) => {
     try {
         const allPilots = await Pilot.find()
+        .populate('team')
         res.status(200).json(allPilots)
     } catch (error) {
         res.status(400).json(error)

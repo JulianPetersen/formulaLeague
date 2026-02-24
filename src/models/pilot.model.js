@@ -18,3 +18,4 @@ pilotSchema.methods.setImgUrl = function setImgUrl (filename){
 
 
 module.exports = mongoose.model('Pilot', pilotSchema);
+  

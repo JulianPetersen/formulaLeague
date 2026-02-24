@@ -6,7 +6,7 @@ const predictionSchema = new mongoose.Schema({
   // positions: [{ pilot: ObjectId, position: Number }]
   positions: [{
     pilot: { type: mongoose.Schema.Types.ObjectId, ref: 'Pilot', required: true },
-    position: { type: Number, required: true, min: 1, max: 20 }
+    position: { type: Number, required: true, min: 1, max: 22 }
   }],
   points: {
     type: Number,
