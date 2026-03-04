@@ -8,6 +8,8 @@ const router = Router();
 
 
 router.get("/", authMiddleware,userCtrl.getInfoUser);
+router.get("/getTopUser", authMiddleware,userCtrl.getTopUsers);
+
 
 
 export default router;
