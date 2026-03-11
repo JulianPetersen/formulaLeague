@@ -8,6 +8,7 @@ import predictionRoutes from "./routes/prediction.routes"
 import trackRoutes from './routes/track.routes'
 import userRoutes from './routes/users.routes'
 import prizeRoutes from './routes/prize.routes'
+import blogRoutes from './routes/blog.routes'
 
 const app = express();
 var path = require('path')
@@ -25,8 +26,7 @@ app.use("/api/prediction", predictionRoutes);
 app.use("/api/track", trackRoutes)
 app.use("/api/user", userRoutes)
 app.use("/api/prize", prizeRoutes)
-
-
+app.use("/api/blog", blogRoutes)
 
 export default app;
  
