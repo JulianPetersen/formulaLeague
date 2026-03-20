@@ -8,6 +8,8 @@ import { roleMiddleware } from "../middlewares/role.middleware";
 
 const router = Router();
 
+router.get("/slug/:slug", blogCtrl.getBlogBySlug); 
+
 router.post(
   "/",
   authMiddleware,
@@ -16,6 +18,7 @@ router.post(
 );
 
 router.get("/", blogCtrl.getAllnews);
+
 
 router.get("/:id", blogCtrl.getnewsById);
 
@@ -43,6 +46,6 @@ router.post(
   blogCtrl.uploadNewsImage
 );
 
-router.get("/slug/:slug", blogCtrl.getBlogBySlug); 
+
   
 export default router; 

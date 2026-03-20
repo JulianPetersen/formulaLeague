@@ -143,9 +143,9 @@ export const uploadNewsImage = async (req, res) => {
 
 export const getBlogBySlug = async (req, res) => {
   try {
-
+    
     const blog = await Blog.findOne({ slug: req.params.slug });
-
+    console.log('el blog es', req.params.slug)
     res.status(200).json(blog);
 
   } catch (error) {
