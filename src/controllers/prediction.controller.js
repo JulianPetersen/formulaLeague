@@ -20,7 +20,7 @@ export const createPrediction = async (req, res) => {
       return res.status(400).json({ message: "Prediction time is over" });
     }
 
-    if (race.status !== "proximamente") {
+    if (race.status !== "lista") {
       return res.status(400).json({ message: "Race is not open for predictions" });
     }
 

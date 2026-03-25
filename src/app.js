@@ -18,6 +18,14 @@ app.use(express.json());
 app.use('/public', express.static(path.join(__dirname, 'storage/imgs')))
 
 
+app.get('/', (req,res)=> {
+  res.json({
+      name: 'formulaLeague',
+      version: '0.0.1'
+  })
+})
+
+
 app.use("/api/auth", authRoutes);
 app.use("/api/teams", teamRoutes);
 app.use("/api/pilot", pilotRoutes);
