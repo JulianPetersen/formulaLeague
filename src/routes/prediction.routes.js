@@ -6,7 +6,7 @@ import { roleMiddleware } from "../middlewares/role.middleware.js";
 
 const router = Router();
 
-router.post("/:raceId",authMiddleware, roleMiddleware(["admin", "moderator"]),predictionCtrl.createPrediction);
+router.post("/:raceId",authMiddleware, roleMiddleware(["admin", "moderator","user"]),predictionCtrl.createPrediction);
 router.get("/get-by-race/:raceId", predictionCtrl.getPredictionsByRace);
 router.get("/mi-predictions",authMiddleware, predictionCtrl.getMyAllPrediction);
 router.get("/mi-prediction-by-race/:raceId",authMiddleware, predictionCtrl.getMyPredictionByRace);
@@ -15,4 +15,4 @@ router.get("/mi-prediction-by-race/:raceId",authMiddleware, predictionCtrl.getMy
 
 
 export default router;
- 
+    
