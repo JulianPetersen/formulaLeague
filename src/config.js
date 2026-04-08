@@ -5,7 +5,7 @@ require ('dotenv').config();
 //     host: process.env.APP_HOST,
 // }
 
-//prod
+// //prod
  export default {
     host: 'https://formulaleague.site'
 }
