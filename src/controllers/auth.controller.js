@@ -32,7 +32,8 @@ export const register = async (req, res) => {
       role: role || "user",
       verified: false,
       verifyToken: token,
-      verifyTokenExpires: Date.now() + 1000 * 60 * 60 * 24 // 24 horas
+      verifyTokenExpires: Date.now() + 1000 * 60 // 1 minuto
+      // verifyTokenExpires: Date.now() + 1000 * 60 * 60 * 24 // 24 horas
     });
 
     // 🔗 LINK (IMPORTANTE: usar tu dominio real)
@@ -143,6 +144,60 @@ export const login = async (req, res) => {
 
   } catch (error) {
     console.error("Login error:", error);
+    return res.status(500).json({ message: "Error en el servidor." });
+  }
+};
+
+
+export const resendVerification = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "El email es obligatorio." });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado." });
+    }
+
+    if (user.verified) {
+      return res.status(400).json({ message: "La cuenta ya está verificada." });
+    }
+
+    // 🔐 generar nuevo token
+    const token = crypto.randomBytes(32).toString('hex');
+
+    user.verifyToken = token;
+    user.verifyTokenExpires = Date.now() + 1000 * 60 * 60 * 24; // 24h
+
+    await user.save();
+
+    // 🔗 LINK (igual que en register)
+    const link = `https://formulaleague.site/verify?token=${token}`;
+
+    // 📧 MAIL con SendGrid
+    await sgMail.send({
+      to: email,
+      from: 'no-reply@formulaleague.site',
+      subject: 'Verificá tu cuenta',
+      html: `
+        <h2>Hola ${user.name || ''}</h2>
+        <p>Solicitaste reenviar el email de verificación.</p>
+        <p>Hacé click acá:</p>
+        <a href="${link}">Verificar cuenta</a>
+        <p>Este enlace expira en 24 horas.</p>
+      `
+    });
+
+    return res.status(200).json({
+      message: "Email de verificación reenviado."
+    });
+
+  } catch (error) {
+    console.error("SENDGRID ERROR:", error.response?.body || error);
     return res.status(500).json({ message: "Error en el servidor." });
   }
 };
