@@ -8,7 +8,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 export const register = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, aceptTerms } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ message: "Email y password son obligatorios." });
@@ -32,8 +32,9 @@ export const register = async (req, res) => {
       role: role || "user",
       verified: false,
       verifyToken: token,
-      verifyTokenExpires: Date.now() + 1000 * 60 // 1 minuto
-      // verifyTokenExpires: Date.now() + 1000 * 60 * 60 * 24 // 24 horas
+      // verifyTokenExpires: Date.now() + 1000 * 60, // 1 minuto
+      verifyTokenExpires: Date.now() + 1000 * 60 * 60 * 24, // 24 horas
+      aceptTerms:aceptTerms,
     });
 
     // 🔗 LINK (IMPORTANTE: usar tu dominio real)

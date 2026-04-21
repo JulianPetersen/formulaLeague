@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
   verified: { type: Boolean, default: false },
   verifyToken: { type: String },
   verifyTokenExpires: { type: Date },
+  aceptTerms:{type: Boolean, default:false},
   createdAt: { type: Date, default: Date.now }
 });
 
