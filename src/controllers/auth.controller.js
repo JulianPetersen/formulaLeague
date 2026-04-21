@@ -202,3 +202,96 @@ export const resendVerification = async (req, res) => {
     return res.status(500).json({ message: "Error en el servidor." });
   }
 };
+
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log('entrando al metodo', email)
+    if (!email) {
+      return res.status(400).json({ message: "El email es obligatorio." });
+    }
+
+    const user = await User.findOne({ email });
+
+    // 🔒 No revelar si existe o no
+    if (!user) {
+      return res.status(200).json({ 
+        message: "Si el email existe, se enviaron instrucciones."
+      });
+    }
+
+    // 🔐 TOKEN
+    const token = crypto.randomBytes(32).toString('hex');
+
+    user.resetToken = token;
+    user.resetTokenExpires = Date.now() + 1000 * 60 * 60; // 1 hora
+
+    console.log(user)
+
+    await user.save();
+
+    // 🔗 LINK
+    const link = `https://formulaleague.site/reset-password?token=${token}`;
+
+    // 📧 MAIL con SendGrid
+    await sgMail.send({
+      to: email,
+      from: 'no-reply@formulaleague.site',
+      subject: 'Recuperar contraseña',
+      html: `
+        <h2>Recuperación de contraseña</h2>
+        <p>Hacé click en el botón para crear una nueva contraseña:</p>
+        <a href="${link}">Restablecer contraseña</a>
+        <p>Este enlace expira en 1 hora.</p>
+      `
+    });
+
+    return res.status(200).json({
+      message: "Si el email existe, se enviaron instrucciones."
+    });
+
+  } catch (error) {
+    console.error("SENDGRID ERROR:", error.response?.body || error);
+    return res.status(500).json({ message: "Error en el servidor." });
+  }
+};
+
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { token, password } = req.body;
+
+    if (!token || !password) {
+      return res.status(400).json({ message: "Datos incompletos." });
+    }
+
+    const user = await User.findOne({
+      resetToken: token,
+      resetTokenExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "Token inválido o expirado."
+      });
+    }
+
+    const salt = bcrypt.genSaltSync(10);
+    user.passwordHash = bcrypt.hashSync(password, salt);
+
+    // limpiar token
+    user.resetToken = undefined;
+    user.resetTokenExpires = undefined;
+
+    await user.save();
+
+    return res.status(200).json({
+      message: "Contraseña actualizada correctamente."
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error en el servidor." });
+  }
+};
