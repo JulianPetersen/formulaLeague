@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "formulaleague-cd901",
+  "private_key_id": "68f3e70fa64b27797ffda38937b43a05b5ff883b",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDVehvbi1f8iQTS\niYsY095ZJYaVXrUG8Z5dP7zN2LVSfnxefI7s7UKTxep2E3fHgPret/rU0cp4FxxD\naDQwMrXQI8ngyGs0HLXyS2LjQ/SvTYPi+zK7ZL+wz9Dq2Bc16apK3U5nZ1fGt5ov\niogpCz295Oa9sKSxF9xysaDgVOyKFeVuBCJl9UTmD0bPetGGvOuxQim52aFwB6sr\nWhQgxG0Yb53RxE+wz+J4CnCc2/xoH0s8BHKWX1ApzT6t5eKdcYG31waO02SOrLBY\nsPA4Hmn8uwL+PNsFEamBHc4pV2yptpXfVw5xZGXodLYJvmZG4hV52ppbAtmeJ1F2\n2Ni6zrqrAgMBAAECggEAAxTEzSmymefL9+vzSk1YiR0N11JE6gMK8zNlzesus5bO\nxCBatPG4HPp/NITgacxwEoHbFXJEg71o2evQAQTiWeab72oet5a7sfHdM55Tkqoo\nP3QhTdIZvPtEe5DZEoNuXHx1BfByAS5XA90+5nTA+q1dZTR+lAdeCUVZQJOiz476\nY/+reTyEBcCbMf/8fiPNsjdt11d2LE8l336LZT+8IbgutToHux4oGhqJNqoaMbyN\ncCRHc6WjKJh9UiSN798O4VLQyOqKJGZ58NibmQG5A71uphWGblMqphwLLClu+h5n\ns/PHGaZbE/oG4VMNclA0A/Ltyzr1GpKala6X3oTvbQKBgQD0/Zspt5npJjXFB93J\nRM+G/U9QEL6PFmF6RIKniRKcu1NLTG420hUm9IcvdIlXKOyAS3RODdsbm4S30wYE\nvX1VASX5fhV49s+K9M26KPM+p3WGlunjTgPs29aoo/W+UdCKAGDlReLXR17qpaQi\nPxzttlFuDxDq4XkuriMP29SQ/QKBgQDfEfd/s9qSNg7kQ7wTq+lgzN4vRcCehgBt\ng5ep6/bVMYiSVe/Ha8OhmNQ50rAAQM9B8UMXwHzzWWn5PxmLwVGIOPrMdGKyv2ZL\n0LMNWc5cRnRkJlKxY4jHGU3WFhCj78Kx1wl4bvZAFIogw70QiVcGACy10h2GEl0C\nT5OrgMP+xwKBgQCFvtWwZp1NnSCJmgvITxqEdVGRQjLl5q/8kd5KHBjfG50TZHxe\nzT3i8GfEzngT7zF9sLOj0Qim/7XqrPeCKvh7KY9TrzOFwCf5kj+lu6lfsQgGG+k/\nwF2AN1vu4OPNrNiOHjrHr+lw4XO94gPC9nWSiI/X572ynLkNdN+LTtWy+QKBgQDK\n2T/DtP2xr87i7GV/TfkvuZziR//dJ+YDsIKeVqFjRWP4DoW5RtnjfWKgImNCF61h\nPc/RLY1yjYC80xCb8fP+eDI48i0+dqbDksj//waVCsyUtfTEssqSowQRBoejTEg0\nCGPoTJ9JrmPdX6HyA7JLFqWRwbxvSwuhKlQSxUl1yQKBgQCNQZx6bKsqI08btiOh\nNyFg/q9C5kayjMgNCRewCEkx2tPb5b9tw/CYlXAzMjAO6MXDH3NOwY9w4evlmysj\nUi8SZzCmsjCzPwGgo7q+lG2vE85/ysrI8BSIL+cK6lmgln9YieFFGuG3AinEvJML\nO8S3XTYTGidl/aDkVoRnt+hq6w==\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-fbsvc@formulaleague-cd901.iam.gserviceaccount.com",
+  "client_id": "116586240107706627393",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40formulaleague-cd901.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
