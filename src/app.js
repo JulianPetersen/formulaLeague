@@ -9,6 +9,11 @@ import trackRoutes from './routes/track.routes'
 import userRoutes from './routes/users.routes'
 import prizeRoutes from './routes/prize.routes'
 import blogRoutes from './routes/blog.routes'
+import pushRoutes from './routes/pushRoutes.routes'
+
+
+import admin from 'firebase-admin';
+import serviceAccount from './firebase-key.json';
 
 const app = express();
 var path = require('path')
@@ -26,6 +31,11 @@ app.get('/', (req,res)=> {
 })
 
 
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+
 app.use("/api/auth", authRoutes);
 app.use("/api/teams", teamRoutes);
 app.use("/api/pilot", pilotRoutes);
@@ -35,6 +45,6 @@ app.use("/api/track", trackRoutes)
 app.use("/api/user", userRoutes)
 app.use("/api/prize", prizeRoutes)
 app.use("/api/blog", blogRoutes)
-
+app.use("/api/push-notification", pushRoutes)
 export default app;
  

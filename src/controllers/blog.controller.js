@@ -1,6 +1,6 @@
 import Blog from "../models/blog.model";
 import appConfig from "../config";
-
+import { sendNotification } from './pushcontroler.controller';
 
 const generateSlug = (title) => {
   return title
@@ -44,10 +44,9 @@ const extractFirstImage = (html) => {
 export const createNews = async (req, res) => {
   try {
 
-    const { title, summary, content, published } = req.body;
+    const { title, summary, content, published, notify } = req.body;
 
     const slug = await generateUniqueSlug(title);
-
     const coverImage = extractFirstImage(content);
 
     const newBlog = new Blog({
@@ -61,12 +60,23 @@ export const createNews = async (req, res) => {
 
     const blogSaved = await newBlog.save();
 
+    // 🔥 NOTIFICACIÓN
+    if (notify && published) {
+      await sendNotification(
+        'Nueva noticia 📰',
+        blogSaved.title,
+        { blogId: blogSaved._id.toString() }
+      );
+    }
+
     res.status(200).json(blogSaved);
 
   } catch (error) {
+    console.error(error);
     res.status(400).json({ message: error.message });
   }
 };
+
 
 export const getAllnews = async (req, res) => {
   try {
