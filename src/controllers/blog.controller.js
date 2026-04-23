@@ -80,7 +80,14 @@ export const createNews = async (req, res) => {
 
 export const getAllnews = async (req, res) => {
   try {
-    const blogs = await Blog.find().sort({ createdAt: -1 });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const blogs = await Blog.find()
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
     res.status(200).json(blogs);
   } catch (error) {
     res.status(400).json({ message: error.message });

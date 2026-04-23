@@ -3,3 +3,4 @@ storage/img
 dist
 .env
 env
+firebase-key.json
