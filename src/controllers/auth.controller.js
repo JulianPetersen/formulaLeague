@@ -8,7 +8,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 export const register = async (req, res) => {
   try {
-    const { name, email, password, role, aceptTerms } = req.body;
+    const { username, email, password, role, aceptTerms } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ message: "Email y password son obligatorios." });
@@ -26,7 +26,7 @@ export const register = async (req, res) => {
     const token = crypto.randomBytes(32).toString('hex');
 
     const user = await User.create({
-      name,
+      username,
       email,
       passwordHash,
       role: role || "user",
@@ -46,7 +46,7 @@ export const register = async (req, res) => {
       from: 'no-reply@formulaleague.site', // ⚠️ debe estar verificado
       subject: 'Verificá tu cuenta',
       html: `
-        <h2>Hola ${name}</h2>
+        <h2>Hola ${username}</h2>
         <p>Hacé click para verificar tu cuenta:</p>
         <a href="${link}">Verificar cuenta</a>
       `
@@ -136,7 +136,7 @@ export const login = async (req, res) => {
       token,
       user: {
         id: user._id,
-        name: user.name,
+        name: user.username,
         email: user.email,
         role: user.role,
         verified: user.verified
@@ -185,7 +185,7 @@ export const resendVerification = async (req, res) => {
       from: 'no-reply@formulaleague.site',
       subject: 'Verificá tu cuenta',
       html: `
-        <h2>Hola ${user.name || ''}</h2>
+        <h2>Hola ${user.username || ''}</h2>
         <p>Solicitaste reenviar el email de verificación.</p>
         <p>Hacé click acá:</p>
         <a href="${link}">Verificar cuenta</a>
