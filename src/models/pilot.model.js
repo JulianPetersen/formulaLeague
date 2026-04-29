@@ -7,7 +7,8 @@ const pilotSchema = new mongoose.Schema({
   number: { type: Number, required: true, unique: true },
   team: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', required: true },
   country: { type: String },
-  img:{ type: String }
+  img:{ type: String },
+  tournamentPoints:{ type: Number, default:0 },
 });
 
 

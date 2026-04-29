@@ -10,7 +10,7 @@ import userRoutes from './routes/users.routes'
 import prizeRoutes from './routes/prize.routes'
 import blogRoutes from './routes/blog.routes'
 import pushRoutes from './routes/pushRoutes.routes'
-
+import trafficLightGameRoutes from "./routes/traficLigthGame.routes";
 
 import admin from 'firebase-admin';
 import serviceAccount from './firebase-key.json';
@@ -46,5 +46,7 @@ app.use("/api/user", userRoutes)
 app.use("/api/prize", prizeRoutes)
 app.use("/api/blog", blogRoutes)
 app.use("/api/push-notification", pushRoutes)
+app.use("/api/trafficLightGameRoutes", trafficLightGameRoutes)
+
 export default app;
  

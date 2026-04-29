@@ -4,3 +4,4 @@ dist
 .env
 env
 firebase-key.json
+./firebase-key.json

@@ -41,7 +41,7 @@ export const getPilotById = async (req, res) => {
 export const updatePilot = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, number, team, country, img } = req.body;
+    const { name, number, team, country, img,tournamentPoints } = req.body;
 
     const pilot = await Pilot.findById(id);
 
@@ -55,7 +55,7 @@ export const updatePilot = async (req, res) => {
     if (team !== undefined) pilot.team = team;
     if (country !== undefined) pilot.country = country;
     if (img !== undefined) pilot.img = img;
-
+    if (tournamentPoints !== undefined) pilot.tournamentPoints = tournamentPoints;
     // Si viene imagen por multer
     if (req.file) {
       const { filename } = req.file;
