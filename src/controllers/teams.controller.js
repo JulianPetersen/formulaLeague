@@ -40,7 +40,7 @@ export const getTeamById = async (req, res) => {
 export const updateTeam = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, img } = req.body;
+        const { name, img,tournamentPoints } = req.body;
 
         // Busco el team
         const team = await Team.findById(id);
@@ -51,6 +51,7 @@ export const updateTeam = async (req, res) => {
         // Actualizo campos
         if (name) team.name = name;
         if (img) team.img = img;
+        if(tournamentPoints) team.tournamentPoints = tournamentPoints
 
         // Si se subió una nueva imagen
         if (req.file) {

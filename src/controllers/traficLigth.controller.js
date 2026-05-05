@@ -59,12 +59,12 @@ export const getBestRecordEachUser = async (req, res) => {
         $project: {
           _id: 0,
           userId: "$_id",
-          name: "$userData.name",
+          name: "$userData.username",
           bestResult: 1
         }
       },
       {
-        $sort: { bestTime: 1 }
+        $sort: { bestResult: 1 }
       }
     ]);
 

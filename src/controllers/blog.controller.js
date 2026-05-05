@@ -65,7 +65,7 @@ export const createNews = async (req, res) => {
       await sendNotification(
         'Nueva noticia 📰',
         blogSaved.title,
-        { blogId: blogSaved._id.toString() }
+        {blogId: blogSaved._id.toString()}
       );
     }
 
