@@ -76,3 +76,15 @@ export const deleteTeam = async (req,res) => {
         res.status(400).json({error:error.messagge})
     }
 }
+
+export const getTeamsRanking = async (req, res) => {
+  try {
+    const teams = await Team.find()
+      .sort({ tournamentPoints: -1 }); // mayor a menor
+
+    res.status(200).json(teams);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: error.message });
+  }
+};

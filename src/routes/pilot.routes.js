@@ -8,6 +8,7 @@ const router = Router();
 
 router.post("/",authMiddleware, roleMiddleware(["admin", "moderator"]), upload.single('img'),pilotCtrl.createPilot);
 router.get("/", authMiddleware,pilotCtrl.getAllPilots);
+router.get("/getrankingpilots", authMiddleware,pilotCtrl.getPilotsRanking)
 router.get("/:id",authMiddleware ,pilotCtrl.getPilotById);  
 router.delete("/:id", authMiddleware, roleMiddleware(["admin", "moderator"]),pilotCtrl.deletePilot)
 router.patch('/:id', authMiddleware, upload.single('img'),pilotCtrl.updatePilot   )

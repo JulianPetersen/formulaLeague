@@ -91,3 +91,16 @@ export const deletePilot = async (req, res) => {
     return res.status(400).json({ message: error.message });
   }
 };
+
+export const getPilotsRanking = async (req, res) => {
+  try {
+    const pilots = await Pilot.find()
+      .populate('team')
+      .sort({ tournamentPoints: -1 }); // DESC: mayor a menor
+
+    res.status(200).json(pilots);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: error.message });
+  }
+};
