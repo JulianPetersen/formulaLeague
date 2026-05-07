@@ -8,7 +8,7 @@ const router = Router();
 
 router.post("/",authMiddleware, roleMiddleware(["admin", "moderator"]), upload.single('img'),teamsCtrl.createTeam);
 router.get("/", teamsCtrl.getAllTeams);
-router.get("/", authMiddleware,teamsCtrl.getTeamsRanking);
+router.get("/getTeamsRanking", authMiddleware,teamsCtrl.getTeamsRanking);
 router.get("/:id", teamsCtrl.getAllTeams);
 router.delete("/:id",teamsCtrl.deleteTeam)
 router.patch('/:id',authMiddleware, roleMiddleware(["admin", "moderator"]), authMiddleware, upload.single('img'),teamsCtrl.updateTeam   )
