@@ -1,13 +1,15 @@
 import TraficLigth from "../models/trafficLightGame.js";
-
+import getWeekId from "../utils/getWeekId.js"
+import WeeklyReward from "../models/weeklyReward.model.js";
+import User from "../models/user.model.js";
 
 export const createNewRecord = async (req, res) => {
     try {
         console.log(req.body)
         const {bestResult } = req.body
         const user = req.user.id;
-        const newRecord = new TraficLigth({ user,bestResult })
-
+        const newRecord = new TraficLigth({ user,bestResult, week:getWeekId() })
+      console.log(newRecord)
         const newRecordGame = await newRecord.save();
         res.status(200).json(newRecordGame)
     } catch (error) {
@@ -37,7 +39,12 @@ export const getRecordByUser = async (req,res) => {
 
 export const getBestRecordEachUser = async (req, res) => {
   try {
+    const weekId = getWeekId();
+    console.log(weekId)
     const records = await TraficLigth.aggregate([
+      {
+        $match: { week: weekId }
+      },
       {
         $group: {
           _id: "$user",
@@ -71,5 +78,52 @@ export const getBestRecordEachUser = async (req, res) => {
     res.status(200).json(records);
   } catch (error) {
     res.status(400).json({ message: error.message });
+  }
+};
+
+
+export const processWeeklyRewards = async () => {
+  try {
+    console.log('procesando semana')
+    const weekId = getWeekId();
+
+    // evitar duplicados
+    const alreadyProcessed = await WeeklyReward.findOne({ week: weekId });
+    if (alreadyProcessed) {
+      console.log("Semana ya procesada");
+      return;
+    }
+
+    const ranking = await TraficLigth.aggregate([
+      { $match: { week: weekId } },
+      {
+        $group: {
+          _id: "$user",
+          bestResult: { $min: "$bestResult" }
+        }
+      },
+      { $sort: { bestResult: 1 } },
+      { $limit: 3 }
+    ]);
+
+    if (!ranking.length) {
+      console.log("No hay datos");
+      return;
+    }
+
+    const rewards = [10, 5, 2];
+
+    for (let i = 0; i < ranking.length; i++) {
+      await User.findByIdAndUpdate(ranking[i]._id, {
+        $inc: { points: rewards[i] }
+      });
+    }
+
+    await WeeklyReward.create({ week: weekId });
+
+    console.log("Premios otorgados correctamente");
+
+  } catch (error) {
+    console.error(error);
   }
 };

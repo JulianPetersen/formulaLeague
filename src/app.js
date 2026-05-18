@@ -11,6 +11,9 @@ import prizeRoutes from './routes/prize.routes'
 import blogRoutes from './routes/blog.routes'
 import pushRoutes from './routes/pushRoutes.routes'
 import trafficLightGameRoutes from "./routes/traficLigthGame.routes";
+import versionAppRoutes from './routes/versionApp.routes.js'
+import "./jobs/weeklyRewardsJob.js"
+
 
 import admin from 'firebase-admin';
 import serviceAccount from './firebase-key.json';
@@ -19,7 +22,6 @@ const app = express();
 var path = require('path')
 app.use(cors());
 app.use(express.json());
-
 app.use('/public', express.static(path.join(__dirname, 'storage/imgs')))
 
 
@@ -47,6 +49,8 @@ app.use("/api/prize", prizeRoutes)
 app.use("/api/blog", blogRoutes)
 app.use("/api/push-notification", pushRoutes)
 app.use("/api/trafficLightGameRoutes", trafficLightGameRoutes)
+app.use("/api/versionApp", versionAppRoutes)
+
 
 export default app;
  
