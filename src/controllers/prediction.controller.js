@@ -1,6 +1,6 @@
 import Prediction from "../models/prediction.model";
 import Race from '../models/race.model'
-
+import { saveLog } from '../utils/logs';
 
 export const createPrediction = async (req, res) => {
   try {
@@ -78,7 +78,6 @@ export const getMyPredictionByRace = async (req, res) => {
     if (!prediction) {
       return res.status(404).json({ message: "Prediction not found" });
     }
-
     return res.status(200).json(prediction);
   } catch (error) {
     console.error(error);

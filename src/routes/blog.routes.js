@@ -17,7 +17,7 @@ router.post(
   blogCtrl.createNews
 );
 
-router.get("/", blogCtrl.getAllnews);
+router.get("/",blogCtrl.getAllnews);
 
 
 router.get("/:id", blogCtrl.getnewsById);

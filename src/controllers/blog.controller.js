@@ -1,6 +1,8 @@
 import Blog from "../models/blog.model";
 import appConfig from "../config";
 import { sendNotification } from './pushcontroler.controller';
+import { saveLog } from '../utils/logs';
+
 
 const generateSlug = (title) => {
   return title
@@ -48,7 +50,6 @@ export const createNews = async (req, res) => {
 
     const slug = await generateUniqueSlug(title);
     const coverImage = extractFirstImage(content);
-
     const newBlog = new Blog({
       title,
       slug,
@@ -68,7 +69,7 @@ export const createNews = async (req, res) => {
         {
           blogId: blogSaved._id.toString(),
           slug: slug,
-          topic:'news'
+          topic: 'news'
         }
       );
     }
@@ -84,6 +85,7 @@ export const createNews = async (req, res) => {
 
 export const getAllnews = async (req, res) => {
   try {
+
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
 
@@ -94,7 +96,13 @@ export const getAllnews = async (req, res) => {
 
     res.status(200).json(blogs);
   } catch (error) {
+    saveLog({
+      type: 'ERROR-OBTENER-NOTICIAS',
+      message: `Hubo un error al obtener las noticias con éxito ${error.message}`,
+      status: 'ERROR'
+    })
     res.status(400).json({ message: error.message });
+
   }
 };
 
@@ -164,7 +172,7 @@ export const uploadNewsImage = async (req, res) => {
 
 export const getBlogBySlug = async (req, res) => {
   try {
-    
+
     const blog = await Blog.findOne({ slug: req.params.slug });
     console.log('el blog es', req.params.slug)
     res.status(200).json(blog);

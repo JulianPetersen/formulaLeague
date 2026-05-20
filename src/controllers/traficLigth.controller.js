@@ -2,38 +2,44 @@ import TraficLigth from "../models/trafficLightGame.js";
 import getWeekId from "../utils/getWeekId.js"
 import WeeklyReward from "../models/weeklyReward.model.js";
 import User from "../models/user.model.js";
-
+import { saveLog } from '../utils/logs';
 export const createNewRecord = async (req, res) => {
-    try {
-        console.log(req.body)
-        const {bestResult } = req.body
-        const user = req.user.id;
-        const newRecord = new TraficLigth({ user,bestResult, week:getWeekId() })
-      console.log(newRecord)
-        const newRecordGame = await newRecord.save();
-        res.status(200).json(newRecordGame)
-    } catch (error) {
-        res.status(400).json({ messagge: error })
-    }
+  try {
+    console.log(req.body)
+    const { bestResult } = req.body
+    const user = req.user.id;
+    const newRecord = new TraficLigth({ user, bestResult, week: getWeekId() })
+    saveLog({
+      type: 'Create-Record',
+      message: 'se crea nuevo record de traficLigth',
+      user,
+      status: 'INFO'
+    })
+
+    const newRecordGame = await newRecord.save();
+    res.status(200).json(newRecordGame)
+  } catch (error) {
+    res.status(400).json({ messagge: error })
+  }
 }
 
 
-export const getAllRecords = async (req,res) => {
-    try {
-        const allRecords = await TraficLigth.find()
-        res.status(200).json(allRecords)
-    } catch (error) {
-        res.status(400).json(error)
-    }
+export const getAllRecords = async (req, res) => {
+  try {
+    const allRecords = await TraficLigth.find()
+    res.status(200).json(allRecords)
+  } catch (error) {
+    res.status(400).json(error)
+  }
 }
 
-export const getRecordByUser = async (req,res) => {
-    try {
-        const record = await TraficLigth.find({user:req.params.userId})
-        res.status(200).json(record)
-    } catch (error) {
-        res.status(400).json(error)
-    }
+export const getRecordByUser = async (req, res) => {
+  try {
+    const record = await TraficLigth.find({ user: req.params.userId })
+    res.status(200).json(record)
+  } catch (error) {
+    res.status(400).json(error)
+  }
 }
 
 
@@ -119,11 +125,25 @@ export const processWeeklyRewards = async () => {
       });
     }
 
+
+
     await WeeklyReward.create({ week: weekId });
+
+        saveLog({
+      type: 'JOB-ENTREGA-PUNTOS-SEMAFORO',
+      message: 'se entregan todos los premios del semaforo',
+      status: 'INFO'
+    })
 
     console.log("Premios otorgados correctamente");
 
   } catch (error) {
     console.error(error);
+
+      saveLog({
+      type: 'JOB-ERROR-ENTREGA.PUNTOS-SEMAFORO',
+      message: `Hubo un error en la entrega de puntos: ${error.message}`,
+      status: 'ERROR'
+    })
   }
 };
