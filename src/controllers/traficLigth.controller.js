@@ -126,7 +126,7 @@ export const processWeeklyRewards = async () => {
 
     for (let i = 0; i < ranking.length; i++) {
       await User.findByIdAndUpdate(ranking[i]._id, {
-        $inc: { points: rewards[i] }
+        $inc: { credits: rewards[i] }
       });
     }
 

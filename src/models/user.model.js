@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
 
   resetToken: String,
   resetTokenExpires: Date,
+  credits:{ type: Number, default: 0 }
 });
 
 export default mongoose.model("User", userSchema);
