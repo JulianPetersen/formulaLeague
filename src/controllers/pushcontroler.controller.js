@@ -30,3 +30,31 @@ import PushToken from '../models/pushToken.model.js';
       topic: 'news'
     });
   };
+
+
+export const sendCustomPush = async (req, res) => {
+  try {
+
+    const {
+      title,
+      body,
+      data,
+    } = req.body;
+
+    await sendNotification(title, body, data);
+
+    res.json({
+      ok: true,
+      message: 'Push enviada'
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      ok: false,
+      error: error.message
+    });
+  }
+};

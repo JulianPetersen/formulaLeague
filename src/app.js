@@ -12,6 +12,7 @@ import blogRoutes from './routes/blog.routes'
 import pushRoutes from './routes/pushRoutes.routes'
 import trafficLightGameRoutes from "./routes/traficLigthGame.routes";
 import versionAppRoutes from './routes/versionApp.routes.js'
+import pushNotificaion from './routes/pushNotification.routes.js'
 import "./jobs/weeklyRewardsJob.js"
 
 
@@ -50,7 +51,7 @@ app.use("/api/blog", blogRoutes)
 app.use("/api/push-notification", pushRoutes)
 app.use("/api/trafficLightGameRoutes", trafficLightGameRoutes)
 app.use("/api/versionApp", versionAppRoutes)
-
+app.use("/api/pushnotification", pushNotificaion)
 
 export default app;
  

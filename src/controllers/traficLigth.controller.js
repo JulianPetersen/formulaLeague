@@ -1,8 +1,9 @@
 import TraficLigth from "../models/trafficLightGame.js";
-import getWeekId from "../utils/getWeekId.js"
 import WeeklyReward from "../models/weeklyReward.model.js";
 import User from "../models/user.model.js";
 import { saveLog } from '../utils/logs';
+import { getWeekId, getPreviousWeekId } from "../utils/getWeekId.js";
+
 export const createNewRecord = async (req, res) => {
   try {
     console.log(req.body)
@@ -19,7 +20,7 @@ export const createNewRecord = async (req, res) => {
     const newRecordGame = await newRecord.save();
     res.status(200).json(newRecordGame)
   } catch (error) {
-    res.status(400).json({ messagge: error })
+    res.status(400).json({ message: error })
   }
 }
 
@@ -90,11 +91,15 @@ export const getBestRecordEachUser = async (req, res) => {
 
 export const processWeeklyRewards = async () => {
   try {
-    console.log('procesando semana')
-    const weekId = getWeekId();
+    console.log('procesando semana');
+
+    // IMPORTANTE:
+    // procesamos la semana anterior
+    const weekId = getPreviousWeekId();
 
     // evitar duplicados
     const alreadyProcessed = await WeeklyReward.findOne({ week: weekId });
+
     if (alreadyProcessed) {
       console.log("Semana ya procesada");
       return;
@@ -125,25 +130,23 @@ export const processWeeklyRewards = async () => {
       });
     }
 
-
-
     await WeeklyReward.create({ week: weekId });
 
-        saveLog({
+    saveLog({
       type: 'JOB-ENTREGA-PUNTOS-SEMAFORO',
-      message: 'se entregan todos los premios del semaforo',
+      message: `Premios entregados para ${weekId}`,
       status: 'INFO'
-    })
+    });
 
     console.log("Premios otorgados correctamente");
 
   } catch (error) {
     console.error(error);
 
-      saveLog({
+    saveLog({
       type: 'JOB-ERROR-ENTREGA.PUNTOS-SEMAFORO',
       message: `Hubo un error en la entrega de puntos: ${error.message}`,
       status: 'ERROR'
-    })
+    });
   }
 };
