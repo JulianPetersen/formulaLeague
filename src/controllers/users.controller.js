@@ -88,3 +88,17 @@ export const getAllUsers = async (req, res) => {
     console.log(error);
   }
 };
+
+
+export const getCreditsByUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id)
+            .select('credits')
+
+        res.status(200).json(user.credits)
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: 'Error interno del servidor' })
+    }
+}

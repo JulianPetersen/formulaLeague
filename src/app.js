@@ -13,7 +13,7 @@ import pushRoutes from './routes/pushRoutes.routes'
 import trafficLightGameRoutes from "./routes/traficLigthGame.routes";
 import versionAppRoutes from './routes/versionApp.routes.js'
 import pushNotificaion from './routes/pushNotification.routes.js'
-import {processWeeklyRewards} from './controllers/traficLigth.controller.js'
+import rewardedAdd from './routes/rewards.routes.js'
 import "./jobs/weeklyRewardsJob.js"
 
 
@@ -25,7 +25,7 @@ var path = require('path')
 app.use(cors());
 app.use(express.json());
 app.use('/public', express.static(path.join(__dirname, 'storage/imgs')))
-processWeeklyRewards();
+
 
 app.get('/', (req,res)=> {
   res.json({
@@ -53,6 +53,8 @@ app.use("/api/push-notification", pushRoutes)
 app.use("/api/trafficLightGameRoutes", trafficLightGameRoutes)
 app.use("/api/versionApp", versionAppRoutes)
 app.use("/api/pushnotification", pushNotificaion)
+app.use("/api/reward-ad", rewardedAdd)
+
 
 export default app;
  

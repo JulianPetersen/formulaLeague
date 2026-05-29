@@ -1,6 +1,10 @@
 import Prediction from "../models/prediction.model";
 import Race from '../models/race.model'
 import { saveLog } from '../utils/logs';
+import User from '../models/user.model';
+
+const MODIFICATION_COST = 10;
+
 
 export const createPrediction = async (req, res) => {
   try {
@@ -150,3 +154,102 @@ export const validatePositions = (positions, maxPositions = 22) => {
   return null; // ✅ Todo OK
 };
  
+
+export const modifyPrediction = async (req, res) => {
+  try {
+
+    const { raceId } = req.params;
+    const userId = req.user.id;
+    const { positions } = req.body;
+
+    const race = await Race.findById(raceId);
+
+    if (!race) {
+      return res.status(404).json({
+        message: "Race not found"
+      });
+    }
+
+    // validar cierre
+    if (race.cutoff && new Date() > new Date(race.cutoff)) {
+      return res.status(400).json({
+        message: "El tiempo de prediccion se termino"
+      });
+    }
+
+    // validar estado
+    if (race.status !== "lista") {
+      return res.status(400).json({
+        message: "Carrera no está abierta"
+      });
+    }
+
+    // validar posiciones
+    const validationError = validatePositions(positions);
+
+    if (validationError) {
+      return res.status(400).json({
+        message: validationError
+      });
+    }
+
+    // buscar usuario
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    // validar créditos
+    if (user.credits < MODIFICATION_COST) {
+      return res.status(400).json({
+        message: "No tienes creditos Suficientes"
+      });
+    }
+
+    // buscar prediction
+    const prediction = await Prediction.findOne({
+      race: raceId,
+      user: userId
+    });
+
+    if (!prediction) {
+      return res.status(404).json({
+        message: "No tienes una prediccion para esta carrera"
+      });
+    }
+
+    // descontar créditos
+    user.credits -= MODIFICATION_COST;
+
+    await user.save();
+
+    // actualizar prediction
+    prediction.positions = positions;
+
+    await prediction.save();
+
+    // logs
+    await saveLog({
+      user: userId,
+      action: 'modify_prediction',
+      description: `Modified prediction for race ${raceId}`
+    });
+
+    return res.status(200).json({
+      message: "Prediction updated",
+      creditsLeft: user.credits,
+      prediction
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    return res.status(500).json({
+      message: error.message
+    });
+  }
+};

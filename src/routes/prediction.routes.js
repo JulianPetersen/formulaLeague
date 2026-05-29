@@ -10,6 +10,8 @@ router.post("/:raceId",authMiddleware, roleMiddleware(["admin", "moderator","use
 router.get("/get-by-race/:raceId", predictionCtrl.getPredictionsByRace);
 router.get("/mi-predictions",authMiddleware, predictionCtrl.getMyAllPrediction);
 router.get("/mi-prediction-by-race/:raceId",authMiddleware, predictionCtrl.getMyPredictionByRace);
+
+router.put("/:raceId/modify",authMiddleware, predictionCtrl.modifyPrediction);
 // router.delete("/:id",teamsCtrl.deleteTeam)
 // router.patch('/:id', authMiddleware, upload.single('img'),teamsCtrl.updateTeam   )
 

@@ -1,7 +1,9 @@
+
+
 import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
-  username: { type: String, unique:true },
+  username: { type: String, unique: true },
   email: { type: String, required: true, unique: true },
   username: {
     type: String,
@@ -14,12 +16,13 @@ const userSchema = new mongoose.Schema({
   verified: { type: Boolean, default: false },
   verifyToken: { type: String },
   verifyTokenExpires: { type: Date },
-  aceptTerms:{type: Boolean, default:false},
+  aceptTerms: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
-
   resetToken: String,
   resetTokenExpires: Date,
-  credits:{ type: Number, default: 0 }
+  credits: { type: Number, default: 0 },
+  adsViewedToday: {type: Number, default: 0},
+  lastAdsDate: {type: Date, default: Date.now}
 });
 
 export default mongoose.model("User", userSchema);
