@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import crypto from 'crypto';
 import sgMail from '@sendgrid/mail';
 import 'dotenv/config';
+import { OAuth2Client } from "google-auth-library";
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 export const register = async (req, res) => {
@@ -23,34 +24,34 @@ export const register = async (req, res) => {
     const passwordHash = bcrypt.hashSync(password, salt);
 
     // 🔐 TOKEN
-    const token = crypto.randomBytes(32).toString('hex');
+    //const token = crypto.randomBytes(32).toString('hex');
 
     const user = await User.create({
       username,
       email,
       passwordHash,
       role: role || "user",
-      verified: false,
-      verifyToken: token,
+      //verified: false,
+      //verifyToken: token,
       // verifyTokenExpires: Date.now() + 1000 * 60, // 1 minuto
-      verifyTokenExpires: Date.now() + 1000 * 60 * 60 * 24, // 24 horas
+      //verifyTokenExpires: Date.now() + 1000 * 60 * 60 * 24, // 24 horas
       aceptTerms:aceptTerms,
     });
 
     // 🔗 LINK (IMPORTANTE: usar tu dominio real)
-    const link = `https://formulaleague.site/verify?token=${token}`;
+    //const link = `https://formulaleague.site/verify?token=${token}`;
 
     // 📧 MAIL con SendGrid
-    await sgMail.send({
-      to: email,
-      from: 'no-reply@formulaleague.site', // ⚠️ debe estar verificado
-      subject: 'Verificá tu cuenta',
-      html: `
-        <h2>Hola ${username}</h2>
-        <p>Hacé click para verificar tu cuenta:</p>
-        <a href="${link}">Verificar cuenta</a>
-      `
-    });
+    // await sgMail.send({
+    //   to: email,
+    //   from: 'no-reply@formulaleague.site', // ⚠️ debe estar verificado
+    //   subject: 'Verificá tu cuenta',
+    //   html: `
+    //     <h2>Hola ${username}</h2>
+    //     <p>Hacé click para verificar tu cuenta:</p>
+    //     <a href="${link}">Verificar cuenta</a>
+    //   `
+    // });
 
     return res.status(201).json({
       message: "Usuario registrado. Revisá tu email para verificar la cuenta."
@@ -114,11 +115,11 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Credenciales inválidas." });
     }
 
-    if (!user.verified) {
-      return res.status(401).json({
-        message: "Debes verificar tu email antes de iniciar sesión"
-      });
-    }
+    // if (!user.verified) {
+    //   return res.status(401).json({
+    //     message: "Debes verificar tu email antes de iniciar sesión"
+    //   });
+    // }
 
     // Crear token JWT
     const token = jwt.sign(
@@ -139,7 +140,7 @@ export const login = async (req, res) => {
         name: user.username,
         email: user.email,
         role: user.role,
-        verified: user.verified
+        // verified: user.verified
       }
     });
 
@@ -293,5 +294,89 @@ export const resetPassword = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error en el servidor." });
+  }
+};
+
+
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+export const  googleLogin = async (req, res) => {
+  console.log('ANTES DEL GOOGLE SIGNIN')
+  try {
+    console.log('llega al endpoint')
+    const { idToken } = req.body; 
+    console.log(idToken)
+
+
+    if (!idToken) {
+      console.log('Falta idToken')
+      return res.status(400).json({
+        message: "Falta idToken"
+      });
+    }
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+     console.log('cverificamos token', ticket)
+    const payload = ticket.getPayload();
+
+    const googleId = payload.sub;
+    const email = payload.email;
+    const name = payload.name;
+    const avatar = payload.picture;
+
+    console.log('comenzamos a crear el usuario')
+
+    if (!email) {
+      return res.status(400).json({
+        message: "Google no devolvió email"
+      });
+    }
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      user = await User.create({
+        name,
+        email,
+        provider: "google",
+        googleId,
+        avatar,
+      });
+    }
+
+    const token = jwt.sign(
+      {
+        id: user._id,
+        role: user.role,
+        email: user.email,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    return res.status(200).json({
+      message: "Login con Google exitoso.",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        points: user.points,
+        credits: user.credits,
+        avatar: user.avatar,
+      },
+    });
+
+  } catch (error) {
+    return res.status(401).json({
+      message: "Google token inválido",
+      error: error.message,
+    });
   }
 };

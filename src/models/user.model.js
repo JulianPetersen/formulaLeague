@@ -21,8 +21,19 @@ const userSchema = new mongoose.Schema({
   resetToken: String,
   resetTokenExpires: Date,
   credits: { type: Number, default: 0 },
-  adsViewedToday: {type: Number, default: 0},
-  lastAdsDate: {type: Date, default: Date.now}
+  adsViewedToday: { type: Number, default: 0 },
+  lastAdsDate: { type: Date, default: Date.now },
+  provider: {
+    type: String,
+    enum: ["local", "google"],
+    default: "local"
+  },
+  googleId: {
+    type: String
+  },
+  avatar: {
+    type: String
+  }
 });
 
 export default mongoose.model("User", userSchema);
