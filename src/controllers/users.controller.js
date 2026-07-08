@@ -26,6 +26,33 @@ export const getTopUsers = async (req, res) => {
   }
 };
 
+export const getMyRankingPosition = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id)
+      .select("username email points");
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    const usersAbove = await User.countDocuments({
+      points: { $gt: user.points || 0 }
+    });
+
+    const totalUsers = await User.countDocuments();
+
+    return res.status(200).json({
+      position: usersAbove + 1,
+      points: user.points || 0,
+      totalUsers,
+      username: user.username,
+      email: user.email
+    });
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
+  }
+};
+
 
 export const setUsername = async (req, res) => {
   try {
