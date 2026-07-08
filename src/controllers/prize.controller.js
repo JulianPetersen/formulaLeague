@@ -1,4 +1,35 @@
 import Prize from "../models/prize.model";
+import User from "../models/user.model";
+import { saveLog } from "../utils/logs";
+import { depositPrizeToWinner } from "../utils/wallet";
+import { closeSeasonForPrize } from "../utils/season";
+
+const getSeasonWinner = async () => {
+    return User.findOne()
+        .sort({ points: -1, createdAt: 1 })
+        .select("_id points username email");
+};
+
+const assignWinnerIfClosing = async (prize, requestedStatus, manualWinner) => {
+    if (requestedStatus !== "cerrado" || manualWinner || prize.winner) {
+        return;
+    }
+
+    const winner = await getSeasonWinner();
+
+    if (!winner) {
+        throw new Error("No hay usuarios para asignar como ganador del premio");
+    }
+
+    prize.winner = winner._id;
+
+    await saveLog({
+        type: "PRIZE-WINNER-ASSIGNED",
+        message: `Ganador asignado automaticamente al premio ${prize._id}. Usuario ${winner._id} con ${winner.points || 0} puntos`,
+        user: winner._id,
+        status: "INFO"
+    });
+};
 
 
 export const createNewPrize = async (req, res) => {
@@ -31,14 +62,17 @@ export const updatePrize = async (req, res) => {
         if (endDate !== undefined) prize.endDate = endDate;
         if (status !== undefined) prize.status = status;
 
-
+        await assignWinnerIfClosing(prize, status, winner);
 
         const updatedPrize = await prize.save();
+
+        await depositPrizeToWinner(updatedPrize);
+        await closeSeasonForPrize(updatedPrize);
 
         return res.status(200).json(updatedPrize);
     } catch (error) {
         console.error(error);
-        return res.status(400).json({ message: error });
+        return res.status(400).json({ message: error.message || error });
     }
 };
 
@@ -49,9 +83,9 @@ export const changeStatusToActive = async (req, res) => {
         const { id } = req.params;
         const { status } = req.body
 
-        const prizeActive = await Prize.findOne({ status: 'activo' })
+        const prizeActive = await Prize.findOne({ status: 'activo', _id: { $ne: id } })
 
-        if (prizeActive) {
+        if (status === 'activo' && prizeActive) {
             return res.status(400).json({ message: 'ya hay un premio activo en este momento, no es posible activar otro' })
         }
 
@@ -63,12 +97,16 @@ export const changeStatusToActive = async (req, res) => {
 
         if (status !== undefined) prize.status = status;
 
+        await assignWinnerIfClosing(prize, status);
 
         const updatedPrize = await prize.save();
 
+        await depositPrizeToWinner(updatedPrize);
+        await closeSeasonForPrize(updatedPrize);
+
         return res.status(200).json(updatedPrize);
     } catch (error) {
-         res.status(400).json({ messagge: error })
+         res.status(400).json({ message: error.message || error })
     }
 
 }
@@ -79,17 +117,34 @@ export const changeStatusToActive = async (req, res) => {
 
 
 export const getActivedPrize = async (req, res) => {
-    try {
-        const activedPrize = await Prize.findOne({ status: "activo" })
+  try {
+    const activePrize = await Prize.findOne({ status: "activo" }).sort({ createdAt: -1 });
 
-        if (!activedPrize) {
-            res.status(400).json({ messagge: 'No hay un premio activo por el momento' })
-        }
-        res.status(200).json(activedPrize)
-    } catch (error) {
-        res.status(400).json({ messagge: error })
+    if (activePrize) {
+      return res.status(200).json(activePrize);
     }
-}
+
+    const closedPrize = await Prize.findOne({ status: "cerrado" }).sort({ updatedAt: -1 });
+
+    if (closedPrize) {
+      return res.status(200).json(closedPrize);
+    }
+
+    const upcomingPrize = await Prize.findOne({ status: "proximamente" }).sort({ createdAt: -1 });
+
+    if (upcomingPrize) {
+      return res.status(200).json(upcomingPrize);
+    }
+
+    return res.status(404).json({
+      message: "No hay premio disponible por el momento"
+    });
+  } catch (error) {
+    return res.status(400).json({
+      message: error.message || error
+    });
+  }
+};
 
 export const getAllPrizes = async (req, res) => {
     try {

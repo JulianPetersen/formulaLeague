@@ -122,7 +122,7 @@ export const processWeeklyRewards = async () => {
       return;
     }
 
-    const rewards = [10, 5, 2];
+    const rewards = [3, 2, 1];
 
     for (let i = 0; i < ranking.length; i++) {
       await User.findByIdAndUpdate(ranking[i]._id, {

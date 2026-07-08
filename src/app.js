@@ -15,6 +15,7 @@ import versionAppRoutes from './routes/versionApp.routes.js'
 import pushNotificaion from './routes/pushNotification.routes.js'
 import rewardedAdd from './routes/rewards.routes.js'
 import visitsPageRoutes from './routes/visitsPage.routes.js'
+import walletRoutes from './routes/wallet.routes.js'
 
 
 import "./jobs/weeklyRewardsJob.js"
@@ -58,6 +59,7 @@ app.use("/api/versionApp", versionAppRoutes)
 app.use("/api/pushnotification", pushNotificaion)
 app.use("/api/reward-ad", rewardedAdd)
 app.use("/api/visitspage", visitsPageRoutes)
+app.use("/api/wallet", walletRoutes)
 
 export default app;
  
