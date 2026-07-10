@@ -96,11 +96,12 @@ export const processWeeklyRewards = async () => {
     // IMPORTANTE:
     // procesamos la semana anterior
     const weekId = getPreviousWeekId();
+    const game = 'traffic-light';
 
     // evitar duplicados
     const alreadyProcessed = await WeeklyReward.findOne({ week: weekId });
 
-    if (alreadyProcessed) {
+    if (alreadyProcessed && (!alreadyProcessed.games?.length || alreadyProcessed.games.includes(game))) {
       console.log("Semana ya procesada");
       return;
     }
@@ -130,7 +131,11 @@ export const processWeeklyRewards = async () => {
       });
     }
 
-    await WeeklyReward.create({ week: weekId });
+    await WeeklyReward.findOneAndUpdate(
+      { week: weekId },
+      { $addToSet: { games: game }, $setOnInsert: { createdAt: new Date() } },
+      { upsert: true, new: true }
+    );
 
     saveLog({
       type: 'JOB-ENTREGA-PUNTOS-SEMAFORO',

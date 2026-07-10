@@ -1,6 +1,8 @@
 import ReflexGame from "../models/reflexGame.model.js";
+import WeeklyReward from "../models/weeklyReward.model.js";
+import User from "../models/user.model.js";
 import { saveLog } from '../utils/logs';
-import { getWeekId } from "../utils/getWeekId.js";
+import { getPreviousWeekId, getWeekId } from "../utils/getWeekId.js";
 
 const TOTAL_ATTEMPTS = 5;
 
@@ -147,5 +149,96 @@ export const getMyBestReflexRecord = async (req, res) => {
     return res.status(200).json(record);
   } catch (error) {
     return res.status(400).json({ message: error.message || error });
+  }
+};
+
+export const processWeeklyReflexRewards = async () => {
+  try {
+    console.log('procesando premios semanales de reflejos');
+
+    const weekId = getPreviousWeekId();
+    const game = 'reflex';
+
+    const alreadyProcessed = await WeeklyReward.findOne({ week: weekId });
+
+    if (alreadyProcessed?.games?.includes(game)) {
+      console.log("Semana de reflejos ya procesada");
+      return;
+    }
+
+    const ranking = await ReflexGame.aggregate([
+      {
+        $match: {
+          week: weekId,
+          attempts: TOTAL_ATTEMPTS,
+          averageResult: { $gt: 0 },
+          bestResult: { $gt: 0 },
+          misses: { $lt: TOTAL_ATTEMPTS }
+        }
+      },
+      {
+        $sort: {
+          averageResult: 1,
+          misses: 1,
+          bestResult: 1,
+          createdAt: 1
+        }
+      },
+      {
+        $group: {
+          _id: "$user",
+          bestSession: { $first: "$$ROOT" }
+        }
+      },
+      {
+        $replaceRoot: { newRoot: "$bestSession" }
+      },
+      {
+        $sort: {
+          averageResult: 1,
+          misses: 1,
+          bestResult: 1,
+          createdAt: 1
+        }
+      },
+      {
+        $limit: 3
+      }
+    ]);
+
+    if (!ranking.length) {
+      console.log("No hay datos de reflejos");
+      return;
+    }
+
+    const rewards = [3, 2, 1];
+
+    for (let i = 0; i < ranking.length; i++) {
+      await User.findByIdAndUpdate(ranking[i].user, {
+        $inc: { credits: rewards[i] }
+      });
+    }
+
+    await WeeklyReward.findOneAndUpdate(
+      { week: weekId },
+      { $addToSet: { games: game }, $setOnInsert: { createdAt: new Date() } },
+      { upsert: true, new: true }
+    );
+
+    saveLog({
+      type: 'JOB-ENTREGA-PUNTOS-REFLEX',
+      message: `Premios de reflejos entregados para ${weekId}`,
+      status: 'INFO'
+    });
+
+    console.log("Premios de reflejos otorgados correctamente");
+  } catch (error) {
+    console.error(error);
+
+    saveLog({
+      type: 'JOB-ERROR-ENTREGA-PUNTOS-REFLEX',
+      message: `Hubo un error en la entrega de puntos de reflejos: ${error.message}`,
+      status: 'ERROR'
+    });
   }
 };
