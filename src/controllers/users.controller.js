@@ -28,7 +28,7 @@ export const getTopUsers = async (req, res) => {
 
 export const getMyRankingPosition = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id)
+    const user = await User.findById(req.user.id) 
       .select("username email points");
 
     if (!user) {
@@ -37,7 +37,7 @@ export const getMyRankingPosition = async (req, res) => {
 
     const usersAbove = await User.countDocuments({
       points: { $gt: user.points || 0 }
-    });
+    }); 
 
     const totalUsers = await User.countDocuments();
 
