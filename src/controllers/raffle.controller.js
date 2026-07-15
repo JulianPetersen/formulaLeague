@@ -283,6 +283,16 @@ export const getMyPrizes = async (req, res) => {
 
 export const claimPrize = async (req, res) => {
   try {
+    const user = await User.findById(req.user.id).select('verified');
+
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    if (!user.verified) {
+      return res.status(403).json({ message: 'Necesitas verificar tu email para reclamar premios' });
+    }
+
     const raffle = await Raffle.findOne({
       _id: req.params.id,
       winner: req.user.id,

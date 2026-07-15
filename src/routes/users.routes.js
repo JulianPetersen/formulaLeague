@@ -14,6 +14,7 @@ router.get("/getMyRankingPosition", authMiddleware,userCtrl.getMyRankingPosition
 router.get("/getUserById", authMiddleware,userCtrl.getUserById);
 router.get("/getAllUSers",authMiddleware,roleMiddleware(["admin", "moderator"]),userCtrl.getAllUsers);
 router.patch("/addUserName", authMiddleware, userCtrl.setUsername)
+router.patch("/updateEmail", authMiddleware, userCtrl.updateEmail)
 
 
 export default router;

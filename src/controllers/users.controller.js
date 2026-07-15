@@ -84,6 +84,51 @@ export const setUsername = async (req, res) => {
   }
 };
 
+export const updateEmail = async (req, res) => {
+  try {
+    const email = String(req.body.email || '').trim().toLowerCase();
+
+    if (!email) {
+      return res.status(400).json({ message: "Email requerido" });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: "Email invalido" });
+    }
+
+    const existingUser = await User.findOne({
+      email,
+      _id: { $ne: req.user.id }
+    });
+
+    if (existingUser) {
+      return res.status(400).json({ message: "El email ya esta en uso" });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        email,
+        verified: false,
+        verifyToken: null,
+        verifyTokenExpires: null
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    return res.status(200).json(user);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Error al actualizar email" });
+  }
+};
+
 
 
 export const getAllUsers = async (req, res) => {
