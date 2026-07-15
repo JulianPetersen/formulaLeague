@@ -17,6 +17,7 @@ import rewardedAdd from './routes/rewards.routes.js'
 import visitsPageRoutes from './routes/visitsPage.routes.js'
 import walletRoutes from './routes/wallet.routes.js'
 import reflexGameRoutes from './routes/reflexGame.routes.js'
+import raffleRoutes from './routes/raffle.routes.js'
 
 
 import "./jobs/weeklyRewardsJob.js"
@@ -62,6 +63,7 @@ app.use("/api/reward-ad", rewardedAdd)
 app.use("/api/visitspage", visitsPageRoutes)
 app.use("/api/wallet", walletRoutes)
 app.use("/api/reflexGame", reflexGameRoutes)
+app.use("/api/raffles", raffleRoutes)
 
 export default app;
  
