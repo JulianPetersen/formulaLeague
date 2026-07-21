@@ -18,6 +18,7 @@ import visitsPageRoutes from './routes/visitsPage.routes.js'
 import walletRoutes from './routes/wallet.routes.js'
 import reflexGameRoutes from './routes/reflexGame.routes.js'
 import raffleRoutes from './routes/raffle.routes.js'
+import raceMindRushRoutes from './routes/raceMindRush.routes.js'
 
 
 import "./jobs/weeklyRewardsJob.js"
@@ -64,6 +65,7 @@ app.use("/api/visitspage", visitsPageRoutes)
 app.use("/api/wallet", walletRoutes)
 app.use("/api/reflexGame", reflexGameRoutes)
 app.use("/api/raffles", raffleRoutes)
+app.use("/api/raceMindRush", raceMindRushRoutes)
 
 export default app;
  
