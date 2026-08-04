@@ -14,6 +14,12 @@ router.get(
   roleMiddleware(adminRoles),
   raffleCtrl.getAdminRaffles
 );
+router.get(
+  '/:id/participants',
+  authMiddleware,
+  roleMiddleware(adminRoles),
+  raffleCtrl.getRaffleParticipants
+);
 router.get('/my-tickets', authMiddleware, raffleCtrl.getMyTickets);
 router.get('/my-prizes', authMiddleware, raffleCtrl.getMyPrizes);
 router.get('/winners', authMiddleware, raffleCtrl.getRecentWinners);

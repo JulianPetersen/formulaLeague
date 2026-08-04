@@ -156,6 +156,78 @@ export const getAdminRaffles = async (req, res) => {
   }
 };
 
+export const getRaffleParticipants = async (req, res) => {
+  try {
+    const raffle = await Raffle.findById(req.params.id).select('title prizeName ticketsSold');
+
+    if (!raffle) {
+      return res.status(404).json({ message: 'Sorteo no encontrado' });
+    }
+
+    const participants = await RaffleTicket.aggregate([
+      {
+        $match: {
+          raffle: new mongoose.Types.ObjectId(req.params.id)
+        }
+      },
+      {
+        $sort: {
+          ticketNumber: 1
+        }
+      },
+      {
+        $group: {
+          _id: '$user',
+          ticketCount: { $sum: 1 },
+          tickets: { $push: '$ticketNumber' },
+          firstTicketAt: { $min: '$createdAt' },
+          lastTicketAt: { $max: '$createdAt' }
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'user'
+        }
+      },
+      {
+        $unwind: '$user'
+      },
+      {
+        $project: {
+          _id: 0,
+          user: {
+            _id: '$user._id',
+            username: '$user.username',
+            email: '$user.email'
+          },
+          ticketCount: 1,
+          tickets: 1,
+          firstTicketAt: 1,
+          lastTicketAt: 1
+        }
+      },
+      {
+        $sort: {
+          ticketCount: -1,
+          lastTicketAt: -1
+        }
+      }
+    ]);
+
+    return res.status(200).json({
+      raffle,
+      totalParticipants: participants.length,
+      totalTickets: raffle.ticketsSold || 0,
+      participants
+    });
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
+  }
+};
+
 export const buyTickets = async (req, res) => {
   const quantity = Number(req.body.quantity || 1);
 
